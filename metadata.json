@@ -1,0 +1,7 @@
+
+{
+  "name": "CEX Arbitrage Finder",
+  "description": "A React-based web application to identify real-time arbitrage opportunities across major centralized cryptocurrency exchanges (CEXs) using the CCXT library. This tool is for educational and informational purposes.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
