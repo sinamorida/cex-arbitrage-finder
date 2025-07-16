@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "ccxt": "^4.3.56",
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

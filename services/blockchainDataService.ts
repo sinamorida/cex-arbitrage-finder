@@ -1,72 +1,80 @@
+import ccxt from 'ccxt';
 import { ArbitrageOpportunity, CexInfo, TriangularArbitrageOpportunity, AnyOpportunity, CrossExchangeTriangularOpportunity, StatisticalArbitrageOpportunity, FlashArbitrageOpportunity } from '../types';
 import { SUPPORTED_CEXS, PAIRS_TO_SCAN, MIN_PROFIT_PERCENTAGE_THRESHOLD } from '../constants';
 
-type MockTicker = {
-    symbol: string;
-    bid: number;
-    ask: number;
-    last: number;
-    timestamp: number;
+// Configuration for fallback mode
+let USE_FALLBACK_DATA = true; // Set to false to use real APIs
+
+// Function to toggle between real and fallback data
+export const setUseRealData = (useRealData: boolean) => {
+    USE_FALLBACK_DATA = !useRealData;
+    console.log(`Data source changed to: ${useRealData ? 'Real APIs' : 'Fallback/Demo'}`);
 };
 
-type ExchangeData = {
-    cex: CexInfo;
-    tickers: { [symbol: string]: MockTicker };
-};
+// Fallback mock data generator
+const generateFallbackData = (timestamp: number): ExchangeData[] => {
+    const basePrices: { [pair: string]: number } = {
+        'BTC/USDT': 43250,
+        'ETH/USDT': 2580,
+        'SOL/USDT': 98.5,
+        'XRP/USDT': 0.515,
+        'DOGE/USDT': 0.082,
+        'ADA/USDT': 0.448,
+        'LINK/USDT': 14.75,
+        'MATIC/USDT': 0.87,
+        'LTC/USDT': 73.2,
+        'BCH/USDT': 245,
+        'BTC/EUR': 39800,
+        'ETH/EUR': 2380,
+        'ETH/BTC': 0.0596,
+        'XRP/BTC': 0.0000119,
+        'SOL/BTC': 0.00228,
+        'ADA/BTC': 0.0000104,
+        'LTC/BTC': 0.00169,
+        'MATIC/BTC': 0.0000201,
+    };
 
-// Base prices that will be used to generate realistic variations
-const BASE_PRICES: { [pair: string]: number } = {
-    'BTC/USDT': 43250,
-    'ETH/USDT': 2580,
-    'SOL/USDT': 98.5,
-    'XRP/USDT': 0.515,
-    'DOGE/USDT': 0.082,
-    'ADA/USDT': 0.448,
-    'LINK/USDT': 14.75,
-    'MATIC/USDT': 0.87,
-    'LTC/USDT': 73.2,
-    'BCH/USDT': 245,
-    'BTC/EUR': 39800,
-    'ETH/EUR': 2380,
-    'ETH/BTC': 0.0596,
-    'XRP/BTC': 0.0000119,
-    'SOL/BTC': 0.00228,
-    'ADA/BTC': 0.0000104,
-    'LTC/BTC': 0.00169,
-    'MATIC/BTC': 0.0000201,
-};
-
-// Generate mock data with realistic price variations and arbitrage opportunities
-const generateMockData = (timestamp: number): ExchangeData[] => {
     return SUPPORTED_CEXS.map((cex, exchangeIndex) => {
-        const tickers: { [symbol: string]: MockTicker } = {};
+        const tickers: { [symbol: string]: ccxt.Ticker } = {};
         
         PAIRS_TO_SCAN.forEach(pair => {
-            if (!BASE_PRICES[pair]) return;
+            if (!basePrices[pair]) return;
             
-            const basePrice = BASE_PRICES[pair];
+            const basePrice = basePrices[pair];
             
-            // Create intentional price differences between exchanges for arbitrage opportunities
+            // Create intentional price differences for arbitrage opportunities
             let priceMultiplier = 1;
-            
-            // Create some profitable opportunities
-            if (Math.random() < 0.3) { // 30% chance of arbitrage opportunity
-                const variation = 0.002 + Math.random() * 0.008; // 0.2% to 1% variation
+            if (Math.random() < 0.4) { // 40% chance of arbitrage opportunity
+                const variation = 0.001 + Math.random() * 0.015; // 0.1% to 1.5% variation
                 priceMultiplier = exchangeIndex % 2 === 0 ? 1 + variation : 1 - variation;
             } else {
-                // Small random variations
-                priceMultiplier = 1 + (Math.random() - 0.5) * 0.002; // ±0.1%
+                priceMultiplier = 1 + (Math.random() - 0.5) * 0.003; // ±0.15%
             }
             
             const price = basePrice * priceMultiplier;
-            const spread = price * (0.0005 + Math.random() * 0.0015); // 0.05% to 0.2% spread
+            const spread = price * (0.0008 + Math.random() * 0.002); // 0.08% to 0.28% spread
             
             tickers[pair] = {
                 symbol: pair,
+                timestamp,
+                datetime: new Date(timestamp).toISOString(),
+                high: price * 1.02,
+                low: price * 0.98,
                 bid: price - spread / 2,
                 ask: price + spread / 2,
                 last: price,
-                timestamp,
+                close: price,
+                open: price * 0.995,
+                change: price * 0.005,
+                percentage: 0.5,
+                average: price,
+                baseVolume: 1000 + Math.random() * 5000,
+                quoteVolume: (1000 + Math.random() * 5000) * price,
+                info: {},
+                vwap: price,
+                bidVolume: undefined,
+                askVolume: undefined,
+                previousClose: undefined
             };
         });
 
@@ -74,8 +82,151 @@ const generateMockData = (timestamp: number): ExchangeData[] => {
     });
 };
 
-// Simulate network delay for realistic experience
-const simulateNetworkDelay = () => new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+type ExchangeData = {
+    cex: CexInfo;
+    tickers: { [symbol: string]: ccxt.Ticker };
+};
+
+// Exchange instances cache
+const exchangeCache: { [id: string]: ccxt.Exchange } = {};
+
+// Initialize exchange instance with proper configuration
+function getExchangeInstance(cexInfo: CexInfo): ccxt.Exchange {
+    if (exchangeCache[cexInfo.id]) {
+        return exchangeCache[cexInfo.id];
+    }
+
+    const config: any = {
+        timeout: 30000,
+        enableRateLimit: true,
+        options: {
+            adjustForTimeDifference: true,
+            defaultType: 'spot'
+        },
+    };
+
+    // Exchange-specific configurations
+    switch (cexInfo.id) {
+        case 'binance':
+            config.options.defaultType = 'spot';
+            break;
+        case 'coinbase':
+            config.sandbox = false;
+            break;
+        case 'kraken':
+            config.options.adjustForTimeDifference = false;
+            break;
+        case 'bybit':
+            config.options.defaultType = 'spot';
+            break;
+        case 'kucoin':
+            config.options.partner = { key: 'ccxt', secret: '', pass: '' };
+            break;
+    }
+
+    try {
+        const exchange = new (ccxt as any)[cexInfo.id](config);
+        exchangeCache[cexInfo.id] = exchange;
+        return exchange;
+    } catch (error) {
+        console.error(`Failed to initialize ${cexInfo.name}:`, error);
+        throw error;
+    }
+}
+
+// Fetch real market data from exchanges
+async function fetchExchangeData(cex: CexInfo): Promise<ExchangeData> {
+    const exchange = getExchangeInstance(cex);
+    
+    try {
+        console.log(`Fetching data from ${cex.name}...`);
+        
+        // Load markets if not already loaded
+        if (!exchange.markets) {
+            await exchange.loadMarkets();
+        }
+
+        // Filter available pairs
+        const availablePairs = PAIRS_TO_SCAN.filter(pair => 
+            exchange.markets && exchange.markets[pair]
+        );
+
+        if (availablePairs.length === 0) {
+            console.warn(`${cex.name}: No supported pairs found`);
+            return { cex, tickers: {} };
+        }
+
+        let tickers: { [symbol: string]: ccxt.Ticker } = {};
+
+        // Try batch fetch first, fallback to individual
+        if (exchange.has['fetchTickers']) {
+            try {
+                const fetchedTickers = await exchange.fetchTickers(availablePairs);
+                tickers = Object.fromEntries(
+                    Object.entries(fetchedTickers).filter(([, ticker]) => 
+                        ticker && ticker.bid && ticker.ask && ticker.bid > 0 && ticker.ask > 0
+                    )
+                );
+                console.log(`${cex.name}: Batch fetched ${Object.keys(tickers).length} tickers`);
+            } catch (batchError) {
+                console.warn(`${cex.name}: Batch fetch failed, trying individual fetches`);
+                
+                // Fallback to individual ticker fetches
+                const results = await Promise.allSettled(
+                    availablePairs.map(async (pair) => {
+                        try {
+                            const ticker = await exchange.fetchTicker(pair);
+                            if (ticker && ticker.bid && ticker.ask && ticker.bid > 0 && ticker.ask > 0) {
+                                return { [pair]: ticker };
+                            }
+                            return null;
+                        } catch (e) {
+                            console.warn(`${cex.name}: Failed to fetch ${pair}:`, e instanceof Error ? e.message : String(e));
+                            return null;
+                        }
+                    })
+                );
+
+                tickers = Object.assign({}, 
+                    ...results
+                        .filter(r => r.status === 'fulfilled' && r.value)
+                        .map(r => (r as PromiseFulfilledResult<any>).value)
+                );
+                console.log(`${cex.name}: Individual fetched ${Object.keys(tickers).length} tickers`);
+            }
+        } else {
+            // Exchange doesn't support batch fetch
+            const results = await Promise.allSettled(
+                availablePairs.map(async (pair) => {
+                    try {
+                        const ticker = await exchange.fetchTicker(pair);
+                        if (ticker && ticker.bid && ticker.ask && ticker.bid > 0 && ticker.ask > 0) {
+                            return { [pair]: ticker };
+                        }
+                        return null;
+                    } catch (e) {
+                        console.warn(`${cex.name}: Failed to fetch ${pair}:`, e instanceof Error ? e.message : String(e));
+                        return null;
+                    }
+                })
+            );
+
+            tickers = Object.assign({}, 
+                ...results
+                    .filter(r => r.status === 'fulfilled' && r.value)
+                    .map(r => (r as PromiseFulfilledResult<any>).value)
+            );
+            console.log(`${cex.name}: Fetched ${Object.keys(tickers).length} tickers individually`);
+        }
+
+        return { cex, tickers };
+
+    } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error(`${cex.name}: Failed to fetch data - ${errorMsg}`);
+        return { cex, tickers: {} };
+    }
+}
 
 const findSpatialOpportunities = (exchangeResults: ExchangeData[], timestamp: number): ArbitrageOpportunity[] => {
     const pricesByPair: { [pair: string]: { cex: CexInfo; bid: number; ask: number }[] } = {};
@@ -447,15 +598,38 @@ const findFlashOpportunities = (exchangeResults: ExchangeData[], timestamp: numb
 
 export const fetchAllOpportunities = async (): Promise<AnyOpportunity[]> => {
     const timestamp = Date.now();
-    console.log('Starting arbitrage scan with mock data...');
-
-    // Simulate network delay for realistic experience
-    await simulateNetworkDelay();
-
-    // Generate mock data for all exchanges
-    const exchangeResults = generateMockData(timestamp);
     
-    console.log(`Generated mock data for ${exchangeResults.length} exchanges`);
+    let exchangeResults: ExchangeData[] = [];
+    
+    if (USE_FALLBACK_DATA) {
+        console.log('Using fallback data for demonstration...');
+        exchangeResults = generateFallbackData(timestamp);
+    } else {
+        console.log('Starting real-time arbitrage scan...');
+        
+        try {
+            // Fetch data from all exchanges in parallel
+            const exchangePromises = SUPPORTED_CEXS.map(cex => fetchExchangeData(cex));
+            const results = await Promise.all(exchangePromises);
+            
+            // Filter out exchanges that failed to fetch data
+            const successfulExchanges = results.filter(result => 
+                Object.keys(result.tickers).length > 0
+            );
+            
+            console.log(`Successfully fetched data from ${successfulExchanges.length}/${SUPPORTED_CEXS.length} exchanges`);
+            
+            if (successfulExchanges.length < 2) {
+                console.warn('Not enough exchanges with data, falling back to demo data...');
+                exchangeResults = generateFallbackData(timestamp);
+            } else {
+                exchangeResults = successfulExchanges;
+            }
+        } catch (error) {
+            console.error('Failed to fetch real data, using fallback:', error);
+            exchangeResults = generateFallbackData(timestamp);
+        }
+    }
     
     // Find all types of arbitrage opportunities
     const spatialOps = findSpatialOpportunities(exchangeResults, timestamp);
@@ -488,6 +662,11 @@ export const fetchAllOpportunities = async (): Promise<AnyOpportunity[]> => {
     }
 
     // Sort by profitability
-    allOpportunities.sort((a, b) => b.profitPercentage - a.profitPercentage);
+    allOpportunities.sort((a, b) => {
+        const aProfit = a.type === 'statistical' ? a.expectedReturn : a.profitPercentage;
+        const bProfit = b.type === 'statistical' ? b.expectedReturn : b.profitPercentage;
+        return bProfit - aProfit;
+    });
+    
     return allOpportunities;
 };

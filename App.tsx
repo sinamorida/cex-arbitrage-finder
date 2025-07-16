@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnyOpportunity, DataStatus } from './types';
-import { fetchAllOpportunities } from './services/blockchainDataService';
+import { fetchAllOpportunities, setUseRealData } from './services/blockchainDataService';
 import Header from './components/Header';
 import OpportunityList from './components/OpportunityList';
 import StatusIndicator from './components/StatusIndicator';
@@ -13,6 +13,14 @@ const App: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isUsingRealData, setIsUsingRealData] = useState(false);
+
+  const handleToggleRealData = useCallback((useRealData: boolean) => {
+    setIsUsingRealData(useRealData);
+    setUseRealData(useRealData);
+    // Trigger immediate reload with new data source
+    loadOpportunities();
+  }, []);
 
   const loadOpportunities = useCallback(async () => {
     setStatus(DataStatus.LOADING);
@@ -53,7 +61,10 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col">
-      <Header />
+      <Header 
+        onToggleRealData={handleToggleRealData}
+        isUsingRealData={isUsingRealData}
+      />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-2xl font-semibold text-sky-400">Arbitrage Opportunities</h2>

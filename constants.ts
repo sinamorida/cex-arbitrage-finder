@@ -35,5 +35,5 @@ export const PAIRS_TO_SCAN: string[] = [
 ];
 
 // ARBITRAGE SCANNING PARAMETERS
-export const REFRESH_INTERVAL_MS = 15000; // 15 seconds for demo purposes
-export const MIN_PROFIT_PERCENTAGE_THRESHOLD = 0.1; // 0.1% minimum for realistic opportunities
+export const REFRESH_INTERVAL_MS = 30000; // 30 seconds to respect rate limits
+export const MIN_PROFIT_PERCENTAGE_THRESHOLD = 0.05; // 0.05% minimum for real opportunities

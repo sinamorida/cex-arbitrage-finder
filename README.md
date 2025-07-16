@@ -1,219 +1,232 @@
 # 🚀 CEX Arbitrage Finder
 
-یک ابزار پیشرفته و کامل برای شناسایی فرصت‌های آربیتراژ در صرافی‌های متمرکز (CEX) با استفاده از React و TypeScript.
+A comprehensive and advanced tool for identifying arbitrage opportunities across Centralized Exchanges (CEX) using React and TypeScript.
 
 ![CEX Arbitrage Finder](https://img.shields.io/badge/Status-Active-brightgreen)
 ![React](https://img.shields.io/badge/React-19.1.0-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7.2-blue)
 ![Vite](https://img.shields.io/badge/Vite-6.2.0-purple)
 
-## 📋 فهرست مطالب
+## 📋 Table of Contents
 
-- [ویژگی‌ها](#ویژگیها)
-- [استراتژی‌های آربیتراژ](#استراتژیهای-آربیتراژ)
-- [نصب و راه‌اندازی](#نصب-و-راهاندازی)
-- [نحوه استفاده](#نحوه-استفاده)
-- [ساختار پروژه](#ساختار-پروژه)
-- [تنظیمات](#تنظیمات)
-- [API و سرویس‌ها](#api-و-سرویسها)
-- [کامپوننت‌ها](#کامپوننتها)
-- [الگوریتم‌های آربیتراژ](#الگوریتمهای-آربیتراژ)
-- [بهینه‌سازی عملکرد](#بهینهسازی-عملکرد)
-- [مشارکت](#مشارکت)
-- [مجوز](#مجوز)
+- [Features](#features)
+- [Arbitrage Strategies](#arbitrage-strategies)
+- [Installation & Setup](#installation--setup)
+- [Usage Guide](#usage-guide)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [API & Services](#api--services)
+- [Components](#components)
+- [Arbitrage Algorithms](#arbitrage-algorithms)
+- [Performance Optimization](#performance-optimization)
+- [Contributing](#contributing)
+- [License](#license)
 
-## ✨ ویژگی‌ها
+## ✨ Features
 
-### 🎯 ویژگی‌های اصلی
-- **شناسایی خودکار فرصت‌های آربیتراژ** در 5 صرافی معتبر
-- **5 استراتژی مختلف آربیتراژ** با الگوریتم‌های پیشرفته
-- **رابط کاربری مدرن و واکنش‌گرا** با Tailwind CSS
-- **به‌روزرسانی زنده** هر 15 ثانیه
-- **فیلتر و دسته‌بندی** فرصت‌ها بر اساس نوع استراتژی
-- **آمار و تحلیل کامل** عملکرد استراتژی‌ها
-- **طراحی موبایل‌محور** برای دسترسی در همه جا
+### 🎯 Core Features
+- **Automated arbitrage opportunity detection** across 5 major exchanges
+- **5 different arbitrage strategies** with advanced algorithms
+- **Modern responsive UI** built with Tailwind CSS
+- **Live updates** every 15 seconds
+- **Filter and categorization** of opportunities by strategy type
+- **Comprehensive statistics and analysis** of strategy performance
+- **Mobile-first design** for access anywhere
 
-### 🔧 ویژگی‌های فنی
-- **بدون وابستگی به API خارجی** - کار با داده‌های شبیه‌سازی شده
-- **TypeScript کامل** برای ایمنی نوع داده‌ها
-- **معماری مدولار** و قابل توسعه
-- **مدیریت حالت پیشرفته** با React Hooks
-- **بهینه‌سازی عملکرد** با lazy loading و memoization
+### 🔧 Technical Features
+- **Real-time API integration** with CCXT library for live exchange data
+- **Smart fallback system** - automatically switches to demo data if APIs fail
+- **Configurable data source** - toggle between live and simulated data
+- **Full TypeScript** for type safety
+- **Modular architecture** and extensible design
+- **Advanced state management** with React Hooks
+- **Performance optimization** with lazy loading and memoization
 
-## 🎲 استراتژی‌های آربیتراژ
+## 🎲 Arbitrage Strategies
 
-### 1. 🔄 Spatial Arbitrage (آربیتراژ فضایی)
-**تعریف**: خرید و فروش همزمان یک دارایی در دو صرافی مختلف با قیمت‌های متفاوت.
+### 1. 🔄 Spatial Arbitrage
+**Definition**: Simultaneous buying and selling of an asset on different exchanges with different prices.
 
-**نحوه کار**:
-- مقایسه قیمت‌های bid/ask یک جفت ارز در صرافی‌های مختلف
-- شناسایی فرصت‌هایی که قیمت فروش در صرافی A بیشتر از قیمت خرید در صرافی B باشد
-- محاسبه سود خالص پس از کسر کارمزدها
+**How it works**:
+- Compare bid/ask prices of a currency pair across different exchanges
+- Identify opportunities where sell price on Exchange A > buy price on Exchange B
+- Calculate net profit after fees
 
-**مثال**:
+**Example**:
 ```
-BTC/USDT در Binance: $43,250 (خرید)
-BTC/USDT در Kraken: $43,400 (فروش)
-سود: 0.35% = $150 در هر BTC
-```
-
-### 2. 🔺 Triangular Arbitrage (آربیتراژ مثلثی)
-**تعریف**: استفاده از اختلاف نرخ ارز بین سه جفت ارز در یک صرافی.
-
-**نحوه کار**:
-- چرخه سه مرحله‌ای: A → B → C → A
-- شناسایی عدم تعادل در نرخ‌های متقابل ارزها
-- اجرای معاملات متوالی برای کسب سود
-
-**مثال**:
-```
-مسیر: USDT → BTC → ETH → USDT
-1. خرید BTC با USDT
-2. خرید ETH با BTC
-3. فروش ETH برای USDT
-سود نهایی: 0.25%
+BTC/USDT on Binance: $43,250 (buy)
+BTC/USDT on Kraken: $43,400 (sell)
+Profit: 0.35% = $150 per BTC
 ```
 
-### 3. 🌐 Cross-Exchange Triangular (آربیتراژ مثلثی چندصرافی)
-**تعریف**: ترکیب آربیتراژ مثلثی با استفاده از چندین صرافی برای بهینه‌سازی سود.
+### 2. 🔺 Triangular Arbitrage
+**Definition**: Exploiting exchange rate differences between three currency pairs on a single exchange.
 
-**نحوه کار**:
-- هر مرحله از چرخه مثلثی در بهترین صرافی انجام می‌شود
-- پیدا کردن بهترین قیمت خرید/فروش در صرافی‌های مختلف
-- ترکیب مزایای آربیتراژ فضایی و مثلثی
+**How it works**:
+- Three-step cycle: A → B → C → A
+- Identify imbalances in cross-currency rates
+- Execute sequential trades to capture profit
 
-**مثال**:
+**Example**:
 ```
-مرحله 1: خرید BTC در Binance (بهترین قیمت)
-مرحله 2: خرید ETH در KuCoin (بهترین قیمت)
-مرحله 3: فروش ETH در Kraken (بهترین قیمت)
+Path: USDT → BTC → ETH → USDT
+1. Buy BTC with USDT
+2. Buy ETH with BTC
+3. Sell ETH for USDT
+Final profit: 0.25%
 ```
 
-### 4. 📊 Statistical Arbitrage (آربیتراژ آماری)
-**تعریف**: استفاده از تحلیل آماری و بازگشت به میانگین برای شناسایی فرصت‌ها.
+### 3. 🌐 Cross-Exchange Triangular
+**Definition**: Combining triangular arbitrage with multiple exchanges to optimize profit.
 
-**نحوه کار**:
-- محاسبه Z-Score برای انحراف قیمت از میانگین تاریخی
-- شناسایی قیمت‌هایی که بیش از 2 انحراف معیار از میانگین فاصله دارند
-- پیش‌بینی بازگشت قیمت به میانگین
+**How it works**:
+- Each step of the triangular cycle executed on the best exchange
+- Find optimal buy/sell prices across different exchanges
+- Combine benefits of spatial and triangular arbitrage
 
-**شاخص‌ها**:
-- **Z-Score**: میزان انحراف از میانگین
-- **Confidence**: درصد اطمینان به پیش‌بینی
-- **Expected Return**: بازده مورد انتظار
+**Example**:
+```
+Step 1: Buy BTC on Binance (best price)
+Step 2: Buy ETH on KuCoin (best price)
+Step 3: Sell ETH on Kraken (best price)
+```
 
-### 5. ⚡ Flash Arbitrage (آربیتراژ برقی)
-**تعریف**: فرصت‌های کوتاه‌مدت با سود بالا که نیاز به اجرای سریع دارند.
+### 4. 📊 Statistical Arbitrage
+**Definition**: Using statistical analysis and mean reversion to identify opportunities.
 
-**ویژگی‌ها**:
-- **پنجره زمانی محدود**: 30 ثانیه تا 5 دقیقه
-- **سود بالا**: معمولاً بیش از 0.5%
-- **اولویت‌بندی**: LOW, MEDIUM, HIGH
-- **هشدار فوری**: برای اجرای سریع
+**How it works**:
+- Calculate Z-Score for price deviation from historical mean
+- Identify prices more than 2 standard deviations from mean
+- Predict price reversion to mean
 
-## 🚀 نصب و راه‌اندازی
+**Metrics**:
+- **Z-Score**: Deviation from mean
+- **Confidence**: Prediction confidence percentage
+- **Expected Return**: Anticipated return
 
-### پیش‌نیازها
-- Node.js (نسخه 18 یا بالاتر)
-- npm یا yarn
-- مرورگر مدرن با پشتیبانی از ES6+
+### 5. ⚡ Flash Arbitrage
+**Definition**: Short-term high-profit opportunities requiring rapid execution.
 
-### مراحل نصب
+**Features**:
+- **Limited time window**: 30 seconds to 5 minutes
+- **High profit**: Usually above 0.5%
+- **Priority levels**: LOW, MEDIUM, HIGH
+- **Instant alerts**: For rapid execution
 
-1. **کلون کردن پروژه**:
+## 🚀 Installation & Setup
+
+### Prerequisites
+- Node.js (version 18 or higher)
+- npm or yarn
+- Modern browser with ES6+ support
+
+### Installation Steps
+
+1. **Clone the repository**:
 ```bash
 git clone https://github.com/your-username/cex-arbitrage-finder.git
 cd cex-arbitrage-finder
 ```
 
-2. **نصب وابستگی‌ها**:
+2. **Install dependencies**:
 ```bash
 npm install
-# یا
+# or
 yarn install
 ```
 
-3. **اجرای پروژه در حالت توسعه**:
+3. **Run development server**:
 ```bash
 npm run dev
-# یا
+# or
 yarn dev
 ```
 
-4. **دسترسی به برنامه**:
+4. **Access the application**:
 ```
 http://localhost:5173
 ```
 
-### ساخت برای تولید
+### Production Build
 
 ```bash
 npm run build
-# یا
+# or
 yarn build
 ```
 
-فایل‌های ساخته شده در پوشه `dist` قرار می‌گیرند.
+Built files will be placed in the `dist` folder.
 
-## 📖 نحوه استفاده
+## 📖 Usage Guide
 
-### 1. مشاهده فرصت‌ها
-- پس از بارگذاری، برنامه به طور خودکار شروع به اسکن می‌کند
-- فرصت‌ها بر اساس سودآوری مرتب می‌شوند
-- هر کارت شامل اطلاعات کامل استراتژی است
+### 1. Data Source Configuration
+- **Settings Panel**: Click the gear icon in the header to access settings
+- **Toggle Data Source**: Switch between "Live Data" and "Demo Mode"
+- **Live Data**: Real-time market data from exchange APIs (may have limitations)
+- **Demo Mode**: Simulated data that always works (default)
 
-### 2. فیلتر کردن استراتژی‌ها
-- از تب‌های بالای صفحه برای فیلتر استفاده کنید
-- مشاهده آمار هر استراتژی
-- مقایسه عملکرد استراتژی‌های مختلف
+### 2. Viewing Opportunities
+- After loading, the app automatically starts scanning
+- Opportunities are sorted by profitability
+- Each card contains complete strategy information
+- Data refreshes every 30 seconds (live mode) or 15 seconds (demo mode)
 
-### 3. تحلیل آمار
-- **کل فرصت‌ها**: تعداد کل فرصت‌های شناسایی شده
-- **میانگین سود**: میانگین سودآوری همه فرصت‌ها
-- **بهترین فرصت**: بالاترین سود قابل دستیابی
-- **استراتژی‌های فعال**: تعداد استراتژی‌هایی که فرصت دارند
+### 3. Filtering Strategies
+- Use tabs at the top to filter by strategy type
+- View statistics for each strategy
+- Compare performance of different strategies
 
-### 4. درک کارت‌های فرصت
-هر کارت شامل:
-- **نوع استراتژی** و رنگ‌بندی مخصوص
-- **درصد سود** قابل دستیابی
-- **جزئیات اجرا** (صرافی‌ها، قیمت‌ها، مراحل)
-- **زمان شناسایی** فرصت
+### 4. Analyzing Statistics
+- **Total Opportunities**: Total number of identified opportunities
+- **Average Profit**: Average profitability of all opportunities
+- **Best Opportunity**: Highest achievable profit
+- **Active Strategies**: Number of strategies with opportunities
 
-## 🏗️ ساختار پروژه
+### 5. Understanding Opportunity Cards
+Each card includes:
+- **Strategy type** with unique color coding
+- **Profit percentage** achievable
+- **Execution details** (exchanges, prices, steps)
+- **Discovery timestamp**
+
+### 6. Data Source Indicator
+- **Green dot (Live Data)**: Real-time data from exchanges
+- **Yellow dot (Demo Mode)**: Simulated data for demonstration
+
+## 🏗️ Project Structure
 
 ```
 cex-arbitrage-finder/
-├── public/                     # فایل‌های استاتیک
+├── public/                     # Static files
 ├── src/
-│   ├── components/            # کامپوننت‌های React
-│   │   ├── ArbitrageCard.tsx           # کارت آربیتراژ فضایی
-│   │   ├── TriangularArbitrageCard.tsx # کارت آربیتراژ مثلثی
-│   │   ├── CrossTriangularArbitrageCard.tsx # کارت آربیتراژ چندصرافی
-│   │   ├── StatisticalArbitrageCard.tsx     # کارت آربیتراژ آماری
-│   │   ├── FlashArbitrageCard.tsx      # کارت آربیتراژ برقی
-│   │   ├── OpportunityList.tsx         # لیست فرصت‌ها
-│   │   ├── StrategyStats.tsx           # آمار استراتژی‌ها
-│   │   ├── Header.tsx                  # هدر برنامه
-│   │   └── StatusIndicator.tsx         # نشانگر وضعیت
-│   ├── services/              # سرویس‌ها و API
-│   │   └── blockchainDataService.ts    # سرویس داده‌های بلاک‌چین
-│   ├── types.ts              # تعریف انواع TypeScript
-│   ├── constants.ts          # ثوابت و تنظیمات
-│   ├── App.tsx              # کامپوننت اصلی
-│   └── index.tsx            # نقطه ورود برنامه
-├── package.json             # وابستگی‌ها و اسکریپت‌ها
-├── tsconfig.json           # تنظیمات TypeScript
-├── vite.config.ts          # تنظیمات Vite
-└── README.md              # مستندات پروژه
+│   ├── components/            # React components
+│   │   ├── ArbitrageCard.tsx           # Spatial arbitrage card
+│   │   ├── TriangularArbitrageCard.tsx # Triangular arbitrage card
+│   │   ├── CrossTriangularArbitrageCard.tsx # Cross-exchange triangular card
+│   │   ├── StatisticalArbitrageCard.tsx     # Statistical arbitrage card
+│   │   ├── FlashArbitrageCard.tsx      # Flash arbitrage card
+│   │   ├── OpportunityList.tsx         # Opportunities list
+│   │   ├── StrategyStats.tsx           # Strategy statistics
+│   │   ├── Header.tsx                  # App header
+│   │   └── StatusIndicator.tsx         # Status indicator
+│   ├── services/              # Services and APIs
+│   │   └── blockchainDataService.ts    # Blockchain data service
+│   ├── types.ts              # TypeScript type definitions
+│   ├── constants.ts          # Constants and configuration
+│   ├── App.tsx              # Main app component
+│   └── index.tsx            # App entry point
+├── package.json             # Dependencies and scripts
+├── tsconfig.json           # TypeScript configuration
+├── vite.config.ts          # Vite configuration
+└── README.md              # Project documentation
 ```
 
-## ⚙️ تنظیمات
+## ⚙️ Configuration
 
-### فایل `constants.ts`
+### `constants.ts` File
 
 ```typescript
-// صرافی‌های پشتیبانی شده
+// Supported exchanges
 export const SUPPORTED_CEXS: CexInfo[] = [
   { id: 'binance', name: 'Binance', logoUrl: '...' },
   { id: 'kraken', name: 'Kraken', logoUrl: '...' },
@@ -222,42 +235,42 @@ export const SUPPORTED_CEXS: CexInfo[] = [
   { id: 'bybit', name: 'Bybit', logoUrl: '...' },
 ];
 
-// جفت ارزهای مورد بررسی
+// Currency pairs to scan
 export const PAIRS_TO_SCAN: string[] = [
   'BTC/USDT', 'ETH/USDT', 'SOL/USDT',
   'XRP/USDT', 'DOGE/USDT', 'ADA/USDT',
   // ...
 ];
 
-// پارامترهای اسکن
-export const REFRESH_INTERVAL_MS = 15000; // 15 ثانیه
+// Scanning parameters
+export const REFRESH_INTERVAL_MS = 15000; // 15 seconds
 export const MIN_PROFIT_PERCENTAGE_THRESHOLD = 0.1; // 0.1%
 ```
 
-### تنظیمات قابل تغییر
+### Configurable Settings
 
-1. **فاصله به‌روزرسانی**: `REFRESH_INTERVAL_MS`
-2. **حداقل سود**: `MIN_PROFIT_PERCENTAGE_THRESHOLD`
-3. **صرافی‌های فعال**: `SUPPORTED_CEXS`
-4. **جفت ارزها**: `PAIRS_TO_SCAN`
+1. **Update interval**: `REFRESH_INTERVAL_MS`
+2. **Minimum profit**: `MIN_PROFIT_PERCENTAGE_THRESHOLD`
+3. **Active exchanges**: `SUPPORTED_CEXS`
+4. **Currency pairs**: `PAIRS_TO_SCAN`
 
-## 🔌 API و سرویس‌ها
+## 🔌 API & Services
 
 ### `blockchainDataService.ts`
 
-این سرویس شامل تمام منطق شناسایی فرصت‌های آربیتراژ است:
+This service contains all arbitrage opportunity detection logic:
 
-#### توابع اصلی:
+#### Main Functions:
 
-1. **`generateMockData()`**: تولید داده‌های شبیه‌سازی شده
-2. **`findSpatialOpportunities()`**: شناسایی آربیتراژ فضایی
-3. **`findTriangularOpportunities()`**: شناسایی آربیتراژ مثلثی
-4. **`findCrossExchangeTriangularOpportunities()`**: آربیتراژ چندصرافی
-5. **`findStatisticalOpportunities()`**: آربیتراژ آماری
-6. **`findFlashOpportunities()`**: آربیتراژ برقی
-7. **`fetchAllOpportunities()`**: تابع اصلی جمع‌آوری
+1. **`generateMockData()`**: Generate simulated data
+2. **`findSpatialOpportunities()`**: Identify spatial arbitrage
+3. **`findTriangularOpportunities()`**: Identify triangular arbitrage
+4. **`findCrossExchangeTriangularOpportunities()`**: Cross-exchange arbitrage
+5. **`findStatisticalOpportunities()`**: Statistical arbitrage
+6. **`findFlashOpportunities()`**: Flash arbitrage
+7. **`fetchAllOpportunities()`**: Main collection function
 
-#### نمونه استفاده:
+#### Usage Example:
 
 ```typescript
 import { fetchAllOpportunities } from './services/blockchainDataService';
@@ -266,43 +279,43 @@ const opportunities = await fetchAllOpportunities();
 console.log(`Found ${opportunities.length} opportunities`);
 ```
 
-## 🧩 کامپوننت‌ها
+## 🧩 Components
 
-### کامپوننت‌های اصلی
+### Main Components
 
 #### 1. `App.tsx`
-- مدیریت حالت کلی برنامه
-- چرخه به‌روزرسانی داده‌ها
-- مدیریت خطاها
+- Global app state management
+- Data update cycle
+- Error handling
 
 #### 2. `OpportunityList.tsx`
-- نمایش لیست فرصت‌ها
-- فیلتر بر اساس نوع استراتژی
-- تب‌های دسته‌بندی
+- Display opportunities list
+- Filter by strategy type
+- Category tabs
 
 #### 3. `StrategyStats.tsx`
-- نمایش آمار کلی
-- تحلیل عملکرد استراتژی‌ها
-- کارت‌های آماری
+- Display overall statistics
+- Strategy performance analysis
+- Statistical cards
 
-#### 4. کارت‌های استراتژی
-هر استراتژی دارای کامپوننت مخصوص خود:
-- `ArbitrageCard.tsx`: آربیتراژ فضایی
-- `TriangularArbitrageCard.tsx`: آربیتراژ مثلثی
-- `CrossTriangularArbitrageCard.tsx`: آربیتراژ چندصرافی
-- `StatisticalArbitrageCard.tsx`: آربیتراژ آماری
-- `FlashArbitrageCard.tsx`: آربیتراژ برقی
+#### 4. Strategy Cards
+Each strategy has its dedicated component:
+- `ArbitrageCard.tsx`: Spatial arbitrage
+- `TriangularArbitrageCard.tsx`: Triangular arbitrage
+- `CrossTriangularArbitrageCard.tsx`: Cross-exchange triangular
+- `StatisticalArbitrageCard.tsx`: Statistical arbitrage
+- `FlashArbitrageCard.tsx`: Flash arbitrage
 
-### ویژگی‌های UI/UX
+### UI/UX Features
 
-- **طراحی واکنش‌گرا**: سازگار با موبایل و دسکتاپ
-- **رنگ‌بندی هوشمند**: هر استراتژی رنگ مخصوص خود
-- **انیمیشن‌های نرم**: برای تجربه کاربری بهتر
-- **آیکون‌های بصری**: برای شناسایی سریع
+- **Responsive design**: Compatible with mobile and desktop
+- **Smart color coding**: Each strategy has its unique color
+- **Smooth animations**: For better user experience
+- **Visual icons**: For quick identification
 
-## 🧮 الگوریتم‌های آربیتراژ
+## 🧮 Arbitrage Algorithms
 
-### الگوریتم آربیتراژ فضایی
+### Spatial Arbitrage Algorithm
 
 ```typescript
 function findSpatialOpportunities(exchanges: ExchangeData[]): Opportunity[] {
@@ -340,7 +353,7 @@ function findSpatialOpportunities(exchanges: ExchangeData[]): Opportunity[] {
 }
 ```
 
-### الگوریتم آربیتراژ مثلثی
+### Triangular Arbitrage Algorithm
 
 ```typescript
 function findTriangularOpportunities(exchange: ExchangeData): Opportunity[] {
@@ -378,196 +391,187 @@ function findTriangularOpportunities(exchange: ExchangeData): Opportunity[] {
 }
 ```
 
-## ⚡ بهینه‌سازی عملکرد
+## ⚡ Performance Optimization
 
-### تکنیک‌های بهینه‌سازی
+### Optimization Techniques
 
-1. **React.memo**: برای جلوگیری از رندر غیرضروری
-2. **useMemo**: برای محاسبات سنگین
-3. **useCallback**: برای توابع callback
-4. **Lazy Loading**: برای کامپوننت‌های سنگین
+1. **React.memo**: Prevent unnecessary re-renders
+2. **useMemo**: For heavy calculations
+3. **useCallback**: For callback functions
+4. **Lazy Loading**: For heavy components
 
-### مدیریت حافظه
+### Memory Management
 
 ```typescript
-// استفاده از cleanup در useEffect
+// Cleanup in useEffect
 useEffect(() => {
   const interval = setInterval(fetchData, REFRESH_INTERVAL_MS);
   return () => clearInterval(interval);
 }, []);
 
-// محدود کردن تعداد فرصت‌های نمایش داده شده
+// Limit displayed opportunities
 const displayedOpportunities = opportunities.slice(0, MAX_DISPLAY_COUNT);
 ```
 
-### بهینه‌سازی شبکه
+### Network Optimization
 
-- **Debouncing**: برای درخواست‌های متوالی
-- **Caching**: ذخیره موقت نتایج
-- **Error Handling**: مدیریت خطاهای شبکه
+- **Debouncing**: For consecutive requests
+- **Caching**: Temporary result storage
+- **Error Handling**: Network error management
 
-## 🔒 امنیت و بهترین شیوه‌ها
+## 🔒 Security & Best Practices
 
-### امنیت داده‌ها
-- **عدم ذخیره اطلاعات حساس**: هیچ کلید API یا اطلاعات شخصی ذخیره نمی‌شود
-- **HTTPS**: استفاده از اتصالات امن
-- **Input Validation**: اعتبارسنجی ورودی‌ها
+### Data Security
+- **No sensitive data storage**: No API keys or personal information stored
+- **HTTPS**: Use secure connections
+- **Input Validation**: Validate all inputs
 
-### بهترین شیوه‌های کد
-- **TypeScript**: برای ایمنی نوع داده‌ها
-- **ESLint**: برای کیفیت کد
-- **Error Boundaries**: مدیریت خطاهای React
-- **Proper State Management**: مدیریت صحیح state
+### Code Best Practices
+- **TypeScript**: For type safety
+- **ESLint**: For code quality
+- **Error Boundaries**: React error handling
+- **Proper State Management**: Correct state handling
 
-## 📊 مثال‌های عملی
+## 📊 Practical Examples
 
-### مثال 1: آربیتراژ فضایی BTC/USDT
-
-```
-صرافی A (Binance): 
-  - قیمت خرید: $43,250
-  - قیمت فروش: $43,280
-
-صرافی B (Kraken):
-  - قیمت خرید: $43,380
-  - قیمت فروش: $43,420
-
-فرصت آربیتراژ:
-  - خرید از Binance: $43,280
-  - فروش در Kraken: $43,380
-  - سود: $100 (0.23%)
-```
-
-### مثال 2: آربیتراژ مثلثی
+### Example 1: BTC/USDT Spatial Arbitrage
 
 ```
-صرافی: Binance
-مسیر: USDT → BTC → ETH → USDT
+Exchange A (Binance): 
+  - Buy price: $43,250
+  - Sell price: $43,280
 
-مرحله 1: 1000 USDT → BTC
-  - نرخ: 43,250 USDT/BTC
-  - مقدار BTC: 0.02312 BTC
+Exchange B (Kraken):
+  - Buy price: $43,380
+  - Sell price: $43,420
 
-مرحله 2: 0.02312 BTC → ETH
-  - نرخ: 0.06 BTC/ETH
-  - مقدار ETH: 0.3853 ETH
-
-مرحله 3: 0.3853 ETH → USDT
-  - نرخ: 2,600 USDT/ETH
-  - مقدار نهایی: 1,001.78 USDT
-
-سود: 1.78 USDT (0.178%)
+Arbitrage opportunity:
+  - Buy from Binance: $43,280
+  - Sell on Kraken: $43,380
+  - Profit: $100 (0.23%)
 ```
 
-## 🚨 هشدارها و محدودیت‌ها
+### Example 2: Triangular Arbitrage
 
-### هشدارهای مهم
-⚠️ **این ابزار صرفاً برای اهداف آموزشی است**
-⚠️ **محاسبات سود شامل کارمزدها و هزینه‌های انتقال نیست**
-⚠️ **قیمت‌ها ممکن است در زمان اجرا تغییر کرده باشند**
-⚠️ **ریسک‌های معاملاتی را در نظر بگیرید**
+```
+Exchange: Binance
+Path: USDT → BTC → ETH → USDT
 
-### محدودیت‌های فنی
-- داده‌ها شبیه‌سازی شده هستند (بدون API واقعی)
-- عدم در نظر گیری slippage و market depth
-- فرض ثابت بودن قیمت‌ها در طول اجرا
+Step 1: 1000 USDT → BTC
+  - Rate: 43,250 USDT/BTC
+  - BTC amount: 0.02312 BTC
 
-## 🤝 مشارکت
+Step 2: 0.02312 BTC → ETH
+  - Rate: 0.06 BTC/ETH
+  - ETH amount: 0.3853 ETH
 
-### نحوه مشارکت
+Step 3: 0.3853 ETH → USDT
+  - Rate: 2,600 USDT/ETH
+  - Final amount: 1,001.78 USDT
 
-1. **Fork کردن پروژه**
-2. **ایجاد branch جدید**:
+Profit: 1.78 USDT (0.178%)
+```
+
+## 🚨 Warnings & Limitations
+
+### Important Warnings
+⚠️ **This tool is for educational purposes only**
+⚠️ **Profit calculations do not include fees and transfer costs**
+⚠️ **Prices may change during execution**
+⚠️ **Consider trading risks**
+
+### Technical Limitations
+- **CORS Issues**: Browser security may block direct API calls to exchanges
+- **Rate Limits**: Exchange APIs have request limits that may affect data freshness
+- **Market Depth**: Does not consider order book depth and slippage
+- **Execution Time**: Prices may change during trade execution
+- **Network Latency**: Real-world execution delays not accounted for
+
+## 🤝 Contributing
+
+### How to Contribute
+
+1. **Fork the project**
+2. **Create a new branch**:
    ```bash
    git checkout -b feature/new-strategy
    ```
-3. **اعمال تغییرات و commit**:
+3. **Make changes and commit**:
    ```bash
    git commit -m "Add new arbitrage strategy"
    ```
-4. **Push کردن تغییرات**:
+4. **Push changes**:
    ```bash
    git push origin feature/new-strategy
    ```
-5. **ایجاد Pull Request**
+5. **Create Pull Request**
 
-### راهنمای توسعه
+### Development Guide
 
-#### اضافه کردن استراتژی جدید
+#### Adding New Strategy
 
-1. **تعریف نوع در `types.ts`**:
+1. **Define type in `types.ts`**:
 ```typescript
 export interface NewStrategyOpportunity {
   type: 'new-strategy';
   id: string;
-  // سایر فیلدها
+  // other fields
 }
 ```
 
-2. **پیاده‌سازی الگوریتم در `blockchainDataService.ts`**:
+2. **Implement algorithm in `blockchainDataService.ts`**:
 ```typescript
 const findNewStrategyOpportunities = (data: ExchangeData[]): NewStrategyOpportunity[] => {
-  // منطق استراتژی
+  // strategy logic
 };
 ```
 
-3. **ایجاد کامپوننت UI**:
+3. **Create UI component**:
 ```typescript
 const NewStrategyCard: React.FC<{opportunity: NewStrategyOpportunity}> = ({opportunity}) => {
-  // UI کامپوننت
+  // UI component
 };
 ```
 
-4. **اضافه کردن به `OpportunityList.tsx`**
+4. **Add to `OpportunityList.tsx`**
 
-### استانداردهای کد
-- استفاده از TypeScript برای همه فایل‌ها
-- پیروی از ESLint rules
-- نوشتن کامنت‌های مفید
-- تست کردن تغییرات
+### Code Standards
+- Use TypeScript for all files
+- Follow ESLint rules
+- Write meaningful comments
+- Test changes
 
-## 📈 نقشه راه آینده
+## 📈 Future Roadmap
 
-### ویژگی‌های در دست توسعه
+### Technical Improvements
 
-- [ ] **اتصال به API واقعی** صرافی‌ها
-- [ ] **سیستم هشدار** برای فرصت‌های پرسود
-- [ ] **تحلیل تاریخی** عملکرد استراتژی‌ها
-- [ ] **محاسبه دقیق کارمزد** و هزینه‌ها
-- [ ] **پشتیبانی از DEX** (صرافی‌های غیرمتمرکز)
-- [ ] **ربات معاملاتی** خودکار
-- [ ] **API عمومی** برای توسعه‌دهندگان
-- [ ] **اپلیکیشن موبایل** native
+- [ ] **WebSocket** for real-time data
+- [ ] **Service Worker** for offline functionality
+- [ ] **PWA** capabilities
+- [ ] **Comprehensive automated tests**
+- [ ] **Complete CI/CD pipeline**
 
-### بهبودهای فنی
+## 📞 Support & Contact
 
-- [ ] **WebSocket** برای داده‌های real-time
-- [ ] **Service Worker** برای کار آفلاین
-- [ ] **PWA** قابلیت‌ها
-- [ ] **تست‌های خودکار** جامع
-- [ ] **CI/CD Pipeline** کامل
-
-## 📞 پشتیبانی و تماس
-
-### راه‌های ارتباطی
-- **GitHub Issues**: برای گزارش باگ و درخواست ویژگی
+### Contact Methods
+- **GitHub Issues**: For bug reports and feature requests
 - **Email**: [your-email@example.com]
-- **Discord**: [لینک سرور Discord]
+- **Discord**: [Discord server link]
 
-### سوالات متداول (FAQ)
+### Frequently Asked Questions (FAQ)
 
-**Q: آیا این ابزار برای معاملات واقعی قابل استفاده است؟**
-A: خیر، این ابزار صرفاً برای اهداف آموزشی طراحی شده است.
+**Q: Can this tool be used for real trading?**
+A: No, this tool is designed for educational purposes only.
 
-**Q: چرا داده‌ها شبیه‌سازی شده هستند؟**
-A: برای جلوگیری از محدودیت‌های API و ارائه تجربه پایدار.
+**Q: Why is the data simulated?**
+A: To avoid API limitations and provide a stable experience.
 
-**Q: چگونه می‌توانم استراتژی جدید اضافه کنم؟**
-A: راهنمای کامل در بخش "مشارکت" موجود است.
+**Q: How can I add a new strategy?**
+A: Complete guide available in the "Contributing" section.
 
-## 📄 مجوز
+## 📄 License
 
-این پروژه تحت مجوز MIT منتشر شده است. برای جزئیات بیشتر فایل `LICENSE` را مطالعه کنید.
+This project is released under the MIT License. See the `LICENSE` file for details.
 
 ```
 MIT License
@@ -595,18 +599,4 @@ SOFTWARE.
 
 ---
 
-## 🙏 تشکر و قدردانی
-
-از تمام کسانی که در توسعه این پروژه مشارکت داشته‌اند تشکر می‌کنیم:
-
-- **React Team** برای فریمورک عالی
-- **Tailwind CSS** برای سیستم طراحی
-- **TypeScript Team** برای ایمنی نوع داده‌ها
-- **Vite** برای ابزار build سریع
-- **جامعه متن‌باز** برای الهام و پشتیبانی
-
----
-
-**ساخته شده با ❤️ برای جامعه کریپتو**
-
-*آخرین بروزرسانی: ژانویه 2025*
+*Last updated: January 2025*
