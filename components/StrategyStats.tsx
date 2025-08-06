@@ -12,10 +12,14 @@ const StrategyStats: React.FC<StrategyStatsProps> = ({ opportunities }) => {
     crossTriangular: opportunities.filter(op => op.type === 'cross-triangular'),
     statistical: opportunities.filter(op => op.type === 'statistical'),
     flash: opportunities.filter(op => op.type === 'flash'),
+    marketMaking: opportunities.filter(op => op.type === 'market-making'),
+    pairs: opportunities.filter(op => op.type === 'pairs'),
   };
 
   const totalProfit = opportunities.reduce((sum, op) => {
     if (op.type === 'statistical') {
+      return sum + op.expectedReturn;
+    } else if (op.type === 'pairs') {
       return sum + op.expectedReturn;
     }
     return sum + op.profitPercentage;
@@ -24,8 +28,10 @@ const StrategyStats: React.FC<StrategyStatsProps> = ({ opportunities }) => {
   const avgProfit = opportunities.length > 0 ? totalProfit / opportunities.length : 0;
 
   const bestOpportunity = opportunities.reduce((best, current) => {
-    const currentProfit = current.type === 'statistical' ? current.expectedReturn : current.profitPercentage;
-    const bestProfit = best.type === 'statistical' ? best.expectedReturn : best.profitPercentage;
+    const currentProfit = current.type === 'statistical' ? current.expectedReturn : 
+                         current.type === 'pairs' ? current.expectedReturn : current.profitPercentage;
+    const bestProfit = best.type === 'statistical' ? best.expectedReturn : 
+                      best.type === 'pairs' ? best.expectedReturn : best.profitPercentage;
     return currentProfit > bestProfit ? current : best;
   }, opportunities[0]);
 
@@ -64,6 +70,20 @@ const StrategyStats: React.FC<StrategyStatsProps> = ({ opportunities }) => {
       color: 'red',
       description: 'High-speed opportunities',
       icon: '⚡'
+    },
+    {
+      name: 'Market Making',
+      count: stats.marketMaking.length,
+      color: 'orange',
+      description: 'Bid-ask spread opportunities',
+      icon: '💰'
+    },
+    {
+      name: 'Pairs',
+      count: stats.pairs.length,
+      color: 'teal',
+      description: 'Statistical pairs trading',
+      icon: '📈'
     }
   ];
 

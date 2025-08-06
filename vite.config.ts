@@ -1,17 +1,40 @@
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+export default defineConfig({
+  define: {
+    global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '.'),
+    }
+  },
+  server: {
+    cors: true,
+    proxy: {
+      // Proxy for exchange APIs to handle CORS
+      '/api/binance': {
+        target: 'https://api.binance.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/binance/, ''),
+        secure: true
       },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
+      '/api/coinbase': {
+        target: 'https://api.exchange.coinbase.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/coinbase/, ''),
+        secure: true
+      },
+      '/api/kraken': {
+        target: 'https://api.kraken.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/kraken/, ''),
+        secure: true
       }
-    };
+    }
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom']
+  }
 });

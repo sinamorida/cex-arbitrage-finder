@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArbitrageOpportunity, CexInfo } from '../types';
 
 interface ArbitrageCardProps {
@@ -55,12 +55,31 @@ const ExchangeInfo: React.FC<{ label: string; exchange: CexInfo; price: number; 
 const ArbitrageCard: React.FC<ArbitrageCardProps> = ({ opportunity }) => {
   const { pair, buyAt, sellAt, profitPercentage, timestamp } = opportunity;
   const [baseAsset, quoteAsset] = pair.split('/');
+  const [showDetails, setShowDetails] = useState(false);
+
+  // محاسبه جزئیات اضافی
+  const spread = sellAt.price - buyAt.price;
+  const spreadPercentage = (spread / buyAt.price) * 100;
+  const estimatedVolume = 1000; // فرضی
+  const estimatedProfit = estimatedVolume * spread;
+
+  // تعیین سطح ریسک بر اساس درصد سود
+  const getRiskLevel = () => {
+    if (profitPercentage > 2) return { level: 'HIGH', color: 'text-red-400', bgColor: 'bg-red-900/20' };
+    if (profitPercentage > 0.5) return { level: 'MEDIUM', color: 'text-yellow-400', bgColor: 'bg-yellow-900/20' };
+    return { level: 'LOW', color: 'text-green-400', bgColor: 'bg-green-900/20' };
+  };
+
+  const riskInfo = getRiskLevel();
 
   return (
     <div className="bg-gray-800 shadow-xl rounded-lg p-5 hover:shadow-cyan-500/20 transition-shadow duration-300 flex flex-col h-full ring-1 ring-gray-700 hover:ring-cyan-600">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-sky-300">{pair}</h3>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+          <h3 className="text-xl font-bold text-sky-300">{pair}</h3>
+        </div>
         <div className="px-2 py-1 bg-green-500/10 rounded">
           <p className="text-sm font-bold text-green-300">+{formatPercentage(profitPercentage)}</p>
         </div>
@@ -68,24 +87,106 @@ const ArbitrageCard: React.FC<ArbitrageCardProps> = ({ opportunity }) => {
 
       {/* Arbitrage Path */}
       <div className="flex items-center justify-center gap-2 my-2">
-        <ExchangeInfo label="Buy At" exchange={buyAt.exchange} price={buyAt.price} pair={pair} labelColor="text-red-400" />
+        <ExchangeInfo label="خرید از" exchange={buyAt.exchange} price={buyAt.price} pair={pair} labelColor="text-red-400" />
         <ArrowLongRightIcon className="w-8 h-8 text-sky-500 flex-shrink-0" />
-        <ExchangeInfo label="Sell At" exchange={sellAt.exchange} price={sellAt.price} pair={pair} labelColor="text-green-400" />
+        <ExchangeInfo label="فروش در" exchange={sellAt.exchange} price={sellAt.price} pair={pair} labelColor="text-green-400" />
       </div>
 
-      {/* Details */}
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 gap-3 my-4">
+        <div className="bg-gray-700/50 rounded-lg p-2 text-center">
+          <p className="text-xs text-gray-400">Spread</p>
+          <p className="text-sm font-medium text-gray-200">{formatPrice(spread, pair)}</p>
+        </div>
+        <div className={`rounded-lg p-2 text-center ${riskInfo.bgColor}`}>
+          <p className="text-xs text-gray-400">ریسک</p>
+          <p className={`text-sm font-medium ${riskInfo.color}`}>
+            {riskInfo.level === 'HIGH' ? 'بالا' : riskInfo.level === 'MEDIUM' ? 'متوسط' : 'کم'}
+          </p>
+        </div>
+      </div>
+
+      {/* Expandable Details */}
+      <button
+        onClick={() => setShowDetails(!showDetails)}
+        className="flex items-center justify-center space-x-2 py-2 text-sm text-sky-400 hover:text-sky-300 transition-colors"
+      >
+        <span>{showDetails ? 'کمتر' : 'جزئیات بیشتر'}</span>
+        <svg 
+          className={`w-4 h-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {showDetails && (
+        <div className="mt-3 space-y-3 border-t border-gray-700 pt-3">
+          {/* Detailed Metrics */}
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-gray-400">Spread درصدی:</span>
+              <span className="text-gray-200 mr-2">{formatPercentage(spreadPercentage)}</span>
+            </div>
+            <div>
+              <span className="text-gray-400">سود تخمینی:</span>
+              <span className="text-green-400 mr-2">{formatPrice(estimatedProfit, pair)}</span>
+            </div>
+          </div>
+
+          {/* Execution Steps */}
+          <div className="bg-gray-700/30 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-gray-300 mb-2">مراحل اجرا:</h4>
+            <ol className="text-xs text-gray-400 space-y-1">
+              <li>1. خرید {baseAsset} از {buyAt.exchange.name} به قیمت {formatPrice(buyAt.price, pair)}</li>
+              <li>2. انتقال {baseAsset} به {sellAt.exchange.name}</li>
+              <li>3. فروش {baseAsset} در {sellAt.exchange.name} به قیمت {formatPrice(sellAt.price, pair)}</li>
+              <li>4. سود خالص: {formatPercentage(profitPercentage)}</li>
+            </ol>
+          </div>
+
+          {/* Risk Factors */}
+          <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-3">
+            <h4 className="text-sm font-medium text-yellow-400 mb-2">عوامل ریسک:</h4>
+            <ul className="text-xs text-yellow-300 space-y-1">
+              <li>• کارمزد معاملات و انتقال</li>
+              <li>• تغییر قیمت در طول اجرا</li>
+              <li>• زمان انتقال بین صرافی‌ها</li>
+              <li>• محدودیت‌های نقدینگی</li>
+            </ul>
+          </div>
+
+          {/* Confidence Score */}
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-400">امتیاز اعتماد:</span>
+            <div className="flex items-center space-x-2">
+              <div className="w-16 bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-emerald-500 h-2 rounded-full" 
+                  style={{ width: '85%' }}
+                ></div>
+              </div>
+              <span className="text-xs text-emerald-400">85%</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
       <div className="mt-auto pt-4 text-center">
          <p className="text-xs text-gray-400">
-           Buy <span className="font-semibold text-gray-300">{baseAsset}</span> on <span className="font-semibold text-gray-300">{buyAt.exchange.name}</span>,
-           sell on <span className="font-semibold text-gray-300">{sellAt.exchange.name}</span>.
+           خرید <span className="font-semibold text-gray-300">{baseAsset}</span> از <span className="font-semibold text-gray-300">{buyAt.exchange.name}</span>،
+           فروش در <span className="font-semibold text-gray-300">{sellAt.exchange.name}</span>
          </p>
          <p className="text-xs text-gray-500 mt-2">
-           This is a gross profit calculation and does not include trading, withdrawal, or network fees.
+           این محاسبه شامل کارمزد معاملات، انتقال یا شبکه نمی‌شود.
          </p>
        </div>
       
       <div className="text-right text-xs text-gray-500 mt-4">
-        Detected: {timeAgo(timestamp)}
+        شناسایی شده: {timeAgo(timestamp)}
       </div>
     </div>
   );

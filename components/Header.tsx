@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import SettingsPanel from './SettingsPanel';
+import NotificationPanel from './NotificationPanel';
 
 interface HeaderProps {
   onToggleRealData: (useRealData: boolean) => void;
@@ -8,6 +9,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onToggleRealData, isUsingRealData }) => {
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
   return (
     <header className="bg-gray-800 shadow-lg">
       <div className="container mx-auto px-4 py-5 flex items-center justify-between">
@@ -28,6 +31,11 @@ const Header: React.FC<HeaderProps> = ({ onToggleRealData, isUsingRealData }) =>
               {isUsingRealData ? 'Live Data' : 'Demo Mode'}
             </span>
           </div>
+          
+          <NotificationPanel 
+            isOpen={isNotificationOpen}
+            onToggle={() => setIsNotificationOpen(!isNotificationOpen)}
+          />
           
           <SettingsPanel 
             onToggleRealData={onToggleRealData}

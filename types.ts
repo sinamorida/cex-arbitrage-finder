@@ -89,7 +89,43 @@ export interface FlashArbitrageOpportunity {
   timestamp: number;
 }
 
-export type AnyOpportunity = ArbitrageOpportunity | TriangularArbitrageOpportunity | CrossExchangeTriangularOpportunity | StatisticalArbitrageOpportunity | FlashArbitrageOpportunity;
+// Market Making Arbitrage: Profit from bid-ask spreads
+export interface MarketMakingOpportunity {
+  type: 'market-making';
+  id: string;
+  pair: string;
+  exchange: CexInfo;
+  bidPrice: number;
+  askPrice: number;
+  spread: number;
+  spreadPercentage: number;
+  volume: number;
+  profitPercentage: number;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  liquidityScore: number; // 0-100
+  timestamp: number;
+}
+
+// Pairs Arbitrage: Statistical pairs trading
+export interface PairsArbitrageOpportunity {
+  type: 'pairs';
+  id: string;
+  pair1: string;
+  pair2: string;
+  exchange: CexInfo;
+  correlation: number;
+  zscore: number;
+  expectedReturn: number;
+  confidence: number;
+  hedgeRatio: number;
+  prices: {
+    pair1: number;
+    pair2: number;
+  };
+  timestamp: number;
+}
+
+export type AnyOpportunity = ArbitrageOpportunity | TriangularArbitrageOpportunity | CrossExchangeTriangularOpportunity | StatisticalArbitrageOpportunity | FlashArbitrageOpportunity | MarketMakingOpportunity | PairsArbitrageOpportunity;
 
 
 export enum DataStatus {
